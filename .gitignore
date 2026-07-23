@@ -1,0 +1,33 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Archivos de caché de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Archivos de datos grandes (opcional, si quieres subir los datos, comenta estas líneas)
+# data/raw/*.csv
+# data/interim/*.csv
+# data/processed/*.csv
+# data/processed/*.pkl
+
+# Archivos de proyecto temporales
+estructura_proyecto.txt
+*.log
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db

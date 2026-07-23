@@ -1,0 +1,87 @@
+# ============================================================
+# WORKFLOW: Despliegue Automático a GitHub Pages
+# ============================================================
+# Disparador: Se ejecuta cada vez que haces push a la rama 'main'.
+# Objetivo: Generar los reportes HTML y desplegarlos como sitio web.
+
+name: Deploy to GitHub Pages
+
+# 1. CUÁNDO SE EJECUTA
+on:
+  push:
+    branches:
+      - main  # Cambia a 'master' si usas esa rama
+
+# 2. PERMISOS NECESARIOS PARA DESPLEGAR
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# 3. TRABAJO PRINCIPAL
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest  # Usamos Linux porque es más rápido y estándar para CI/CD
+
+    steps:
+      # 3.1 Clonar el repositorio
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 3.2 Configurar Python 3.12 (compatible con tu entorno)
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # 3.3 Instalar dependencias desde requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 3.4 CREAR CARPETA DE SALIDA (docs)
+      - name: Create output directory
+        run: mkdir -p docs
+
+      # 3.5 Generar los reportes HTML (ydata-profiling)
+      - name: Generate HTML reports
+        run: |
+          python src/generate_reports.py
+
+      # 3.6 (OPCIONAL) Convertir Notebooks a HTML para visualización
+      - name: Convert Jupyter Notebooks to HTML
+        run: |
+          jupyter nbconvert --to html notebooks/*.ipynb --output-dir=docs/
+
+      # 3.7 Copiar imágenes y archivos estáticos a docs/
+      - name: Copy assets to docs
+        run: |
+          cp -r reports/figures docs/ 2>/dev/null || true
+
+      # 3.8 Crear un index.html simple (página de inicio)
+      - name: Create index.html
+        run: |
+          echo '<!DOCTYPE html>
+          <html>
+          <head><title>Sales & Marketing Churn Analysis</title></head>
+          <body>
+          <h1>📊 Sales & Marketing Churn Analysis</h1>
+          <ul>
+            <li><a href="report_raw.html">📄 Reporte de Datos Crudos</a></li>
+            <li><a href="report_processed.html">📄 Reporte de Datos Procesados</a></li>
+            <li><a href="01_CRISP_Data_Understanding.html">📓 Notebook 01 - Data Understanding</a></li>
+            <li><a href="02_CRISP_Data_Preparation.html">📓 Notebook 02 - Data Preparation</a></li>
+            <li><a href="figures/fig1_correlation_heatmap.png">🖼️ Ver Heatmap</a></li>
+          </ul>
+          </body>
+          </html>' > docs/index.html
+
+      # 3.9 DESPLEGAR A GITHUB PAGES
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          publish_branch: gh-pages
+          force_orphan: true

@@ -1,0 +1,29 @@
+
+=== DATA LINEAGE REPORT ===
+
+1. Raw Data (Origen):
+   - Fuente: Kaggle (bhaskerpaul/sales-and-marketing-dataset)
+   - Archivo original: Sales - Marketing customer dataset.csv
+   - Ubicación: data/raw/sales_marketing_raw.csv (debe copiarse manualmente)
+
+2. Interim Data (Limpieza básica):
+   - Transformaciones aplicadas:
+     - Eliminación de duplicados.
+     - Imputación de nulos (mediana por churn, moda).
+     - Corrección de edad negativa (NaN).
+     - Winsorización de total_spent (P99).
+   - Ubicación: data/interim/sales_marketing_clean.csv
+
+3. Processed Data (Preparación para ML):
+   - Transformaciones aplicadas:
+     - Feature Engineering: satisfaction_risk, is_high_spender, interacciones, variables temporales.
+     - One-Hot Encoding (7 variables).
+     - Escalado con RobustScaler (16 variables).
+   - Ubicación: data/processed/sales_marketing_processed.csv
+
+4. Model Input (Splits):
+   - X_train.pkl, X_test.pkl, y_train.pkl, y_test.pkl
+   - División estratificada (80/20) con semilla 42.
+
+5. Metadata:
+   - data/processed/metadata.json
