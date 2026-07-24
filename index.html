@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sales & Marketing Churn Analysis — Portfolio</title>
+
+    <!-- ============================================================
+    META TAGS PARA COMPARTIR
+    ============================================================ -->
+    <meta property="og:title" content="Sales & Marketing Churn Analysis" />
+    <meta property="og:description" content="Proyecto completo de Ciencia de Datos: EDA, preparación y modelado predictivo de churn." />
+    <meta property="og:image" content="https://ingrauljaimes.github.io/sales-marketing-churn-analysis/figures/fig1_correlation_heatmap.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Favicon (emojicdn) -->
+    <link rel="icon" href="https://emojicdn.elk.sh/📊" type="image/png" />
+
+    <!-- Google Fonts: Inter (moderna y elegante) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+
+    <!-- ============================================================
+    ESTILOS COMPLETOS (CON PALETA PROFESIONAL + MODO OSCURO + NOTEBOOKS + REPORTES)
+    ============================================================ -->
+    <style>
+        /* ----- VARIABLES CSS (Temas) ----- */
+        :root {
+            --bg-body: #f6f9fc;
+            --bg-container: #ffffff;
+            --bg-section-1: #f8faff;
+            --bg-section-2: #f0f4ff;
+            --bg-section-3: #faf0ff;
+            --bg-section-4: #f5f9ff;
+            --bg-section-5: #f0f7ff;
+            --bg-section-6: #faf5ff;
+            --bg-section-7: #f5f5ff;
+            --bg-section-8: #f0faff;
+            --bg-section-9: #f8f5ff;
+            --bg-code: #f0f2f5;
+            --bg-nav: rgba(255, 255, 255, 0.72);
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 20px 50px -12px rgba(79, 70, 229, 0.2);
+            --accent-start: #4f46e5;
+            --accent-end: #7c3aed;
+            --accent: #4f46e5;
+            --gradient: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0a0e14;
+            --bg-container: #111827;
+            --bg-section-1: #111827;
+            --bg-section-2: #1e1b4b;
+            --bg-section-3: #0f172a;
+            --bg-section-4: #111827;
+            --bg-section-5: #1a1a2e;
+            --bg-section-6: #1e1b4b;
+            --bg-section-7: #0f172a;
+            --bg-section-8: #111827;
+            --bg-section-9: #1a1a2e;
+            --bg-code: #252d3f;
+            --bg-nav: rgba(17, 24, 39, 0.78);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #2d3748;
+            --shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+            --shadow-hover: 0 20px 50px -12px rgba(129, 140, 248, 0.25);
+            --accent-start: #818cf8;
+            --accent-end: #a78bfa;
+            --accent: #818cf8;
+            --gradient: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+        }
+
+        /* ----- RESET Y BASE ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 0 1rem 3rem 1rem;
+            transition: background 0.4s ease, color 0.4s ease;
+            min-height: 100vh;
+        }
+
+        /* ----- CONTENEDOR PRINCIPAL ----- */
+        .container {
+            max-width: 1120px;
+            margin: 0 auto;
+            background: var(--bg-container);
+            border-radius: 24px;
+            padding: 0 0 2.5rem 0;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+            overflow: hidden;
+        }
+
+        /* ----- BARRA DE NAVEGACIÓN (STICKY + GLASS) ----- */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--bg-nav);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.8rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem 1.5rem;
+            transition: background 0.3s ease, border-color 0.3s ease;
+            border-radius: 24px 24px 0 0;
+        }
+
+        .navbar .logo {
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            white-space: nowrap;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem 1rem;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 0.3rem 0.1rem;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .nav-links a:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 4px;
+            border-radius: 2px;
+        }
+
+        .theme-toggle-nav {
+            background: var(--bg-code);
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            padding: 0.25rem 0.9rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.25s ease;
+            font-family: inherit;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle-nav:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        /* ----- ENCABEZADO (fuera de las secciones para que no se mezcle) ----- */
+        .hero {
+            padding: 2.5rem 2.8rem 1.5rem 2.8rem;
+            background: var(--bg-container);
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.4s ease, border-color 0.4s ease;
+        }
+
+        .hero h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.2rem;
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            border-left: 4px solid var(--accent);
+            padding-left: 1.2rem;
+            margin-bottom: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .badge-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            background: var(--bg-code);
+            color: var(--text-secondary);
+            padding: 0.2rem 0.9rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* ----- SECCIONES (con fondos diferenciados) ----- */
+        .section {
+            padding: 2rem 2.8rem;
+            margin: 0;
+            transition: background 0.4s ease, border-color 0.4s ease, opacity 0.6s ease, transform 0.6s ease;
+            opacity: 0;
+            transform: translateY(30px);
+            border-bottom: 1px solid var(--border-color);
+            scroll-margin-top: 80px; /* para que el scroll no tape el título con la navbar */
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Asignación de fondos alternos */
+        .section:nth-of-type(1) { background: var(--bg-section-1); }
+        .section:nth-of-type(2) { background: var(--bg-section-2); }
+        .section:nth-of-type(3) { background: var(--bg-section-3); }
+        .section:nth-of-type(4) { background: var(--bg-section-4); }
+        .section:nth-of-type(5) { background: var(--bg-section-5); }
+        .section:nth-of-type(6) { background: var(--bg-section-6); }
+        .section:nth-of-type(7) { background: var(--bg-section-7); }
+        .section:nth-of-type(8) { background: var(--bg-section-8); }
+        .section:nth-of-type(9) { background: var(--bg-section-9); }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 0 0 0.8rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-primary);
+            transition: color 0.3s ease;
+        }
+
+        .section-title .emoji {
+            font-size: 1.5rem;
+        }
+
+        .text-block {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .text-block strong {
+            color: var(--text-primary);
+        }
+
+        /* ----- TARJETAS Y GRIDS ----- */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.2rem;
+            margin: 1rem 0 1.5rem 0;
+        }
+
+        .card {
+            background: var(--bg-container);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.2rem 1.5rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text-primary);
+            display: block;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--accent);
+        }
+
+        .card .icon {
+            font-size: 1.8rem;
+        }
+        .card h3 {
+            font-size: 1.1rem;
+            margin: 0.4rem 0 0.2rem 0;
+            color: var(--text-primary);
+        }
+        .card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        .card .tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            background: var(--bg-code);
+            padding: 0.1rem 0.7rem;
+            border-radius: 20px;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        /* ============================================================
+           ESTILOS PREMIUM PARA TARJETAS DE NOTEBOOKS Y REPORTES
+           ============================================================ */
+        .premium-card {
+            background: var(--bg-container);
+            border-left: 4px solid var(--accent);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .premium-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .premium-card:hover::before {
+            opacity: 1;
+        }
+
+        .premium-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+            border-left-color: var(--accent);
+        }
+
+        .premium-card .icon {
+            font-size: 2rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .premium-card .tag {
+            background: var(--bg-code);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 0.1rem 0.8rem;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .premium-card:hover .icon {
+            transform: scale(1.05);
+            transition: transform 0.3s ease;
+        }
+
+        /* ----- COMPARATIVA (ANTES / DESPUÉS) ----- */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1rem 0 1.5rem 0;
+        }
+
+        .compare-col {
+            background: var(--bg-container);
+            border-radius: 16px;
+            padding: 1.2rem 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .compare-col h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .compare-col ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .compare-col ul li {
+            padding: 0.3rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .compare-col ul li:last-child {
+            border-bottom: none;
+        }
+
+        .compare-col .highlight {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .compare-col .badge-problem {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 0.1rem 0.6rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .compare-col .badge-solved {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 0.1rem 0.6rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        [data-theme="dark"] .compare-col .badge-problem {
+            background: #7f1d1d;
+            color: #fca5a5;
+        }
+        [data-theme="dark"] .compare-col .badge-solved {
+            background: #14532d;
+            color: #86efac;
+        }
+
+        /* ----- LISTAS ----- */
+        ul.insights {
+            padding-left: 1.5rem;
+            color: var(--text-secondary);
+        }
+        ul.insights li {
+            margin-bottom: 0.4rem;
+        }
+        ul.insights code {
+            background: var(--bg-code);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        /* ----- FIGURAS / VISUALIZACIONES ----- */
+        .figure-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .figure-card {
+            background: var(--bg-container);
+            border-radius: 16px;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .figure-card:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-3px);
+        }
+
+        .figure-card img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: white; /* para que los bordes se vean bien */
+        }
+
+        .figure-card .caption {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.6rem;
+            text-align: left;
+        }
+
+        .figure-card .caption strong {
+            color: var(--text-primary);
+        }
+
+        /* ----- BLOQUE DE CÓDIGO (estructura) ----- */
+        .code-block {
+            background: var(--bg-code);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+            transition: background 0.3s ease;
+            margin: 0.5rem 0 1rem 0;
+            line-height: 1.7;
+        }
+
+        /* ----- BOTÓN DE VOLVER ARRIBA (FAB) ----- */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--gradient);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            font-size: 1.4rem;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.3);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        .back-to-top:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 32px rgba(79, 70, 229, 0.45);
+        }
+
+        /* ----- FOOTER ----- */
+        .footer {
+            padding: 1.5rem 2.8rem;
+            background: var(--bg-container);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            transition: background 0.4s ease, border-color 0.4s ease;
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ----- RESPONSIVE ----- */
+        @media (max-width: 800px) {
+            .navbar {
+                padding: 0.6rem 1.5rem;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .nav-links {
+                justify-content: center;
+            }
+            .hero {
+                padding: 1.8rem 1.5rem 1rem 1.5rem;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .section {
+                padding: 1.5rem 1.5rem;
+            }
+            .section-title {
+                font-size: 1.3rem;
+            }
+            .compare-grid {
+                grid-template-columns: 1fr;
+            }
+            .footer {
+                padding: 1rem 1.5rem;
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links {
+                gap: 0.2rem 0.6rem;
+            }
+            .nav-links a {
+                font-size: 0.75rem;
+            }
+            .hero h1 {
+                font-size: 1.6rem;
+            }
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            .figure-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    BARRA DE NAVEGACIÓN
+    ============================================================ -->
+    <nav class="navbar" role="navigation" aria-label="Navegación principal">
+        <a href="#" class="logo">📊 Churn Analysis</a>
+        <ul class="nav-links">
+            <li><a href="#problema">Problema</a></li>
+            <li><a href="#preguntas">Preguntas</a></li>
+            <li><a href="#dataset">Dataset</a></li>
+            <li><a href="#hallazgos">Hallazgos</a></li>
+            <li><a href="#insights">Insights</a></li>
+            <li><a href="#visualizaciones">Visualizaciones</a></li>
+            <li><a href="#notebooks">📓 Notebooks</a></li>
+            <li><a href="#reportes">📄 Reportes</a></li>
+            <li><a href="#preparacion">Preparación</a></li>
+            <li><a href="#estado">Estado</a></li>
+            <li><a href="#proximos">Próximos Pasos</a></li>
+        </ul>
+        <button class="theme-toggle-nav" id="themeToggleNav" aria-label="Cambiar tema">
+            <span id="themeIconNav">🌙</span> <span id="themeLabelNav">Oscuro</span>
+        </button>
+    </nav>
+
+    <!-- ============================================================
+    CONTENIDO PRINCIPAL
+    ============================================================ -->
+    <main class="container">
+
+        <!-- HERO (sin fondo de sección) -->
+        <div class="hero">
+            <h1>📊 Sales & Marketing Churn Analysis</h1>
+            <div class="subtitle">
+                Análisis Exploratorio · Preparación de Datos · Modelado Predictivo
+            </div>
+            <div class="badge-group">
+                <span class="badge">📦 15,000 registros</span>
+                <span class="badge">🎯 Churn 15.3%</span>
+                <span class="badge">🔬 EDA + ML</span>
+                <span class="badge">📅 2026</span>
+                <span class="badge">🐍 Python 3.12</span>
+                <span class="badge">📈 CRISP‑DM</span>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        SECCIÓN 1: PROBLEMA DE NEGOCIO
+        ============================================================ -->
+        <section class="section" id="problema">
+            <div class="section-title"><span class="emoji">🎯</span> Problema de Negocio</div>
+            <p class="text-block">
+                La empresa enfrenta una tasa de churn (abandono de clientes) del <strong>15%</strong>, lo que representa una pérdida significativa de ingresos recurrentes. El objetivo es <strong>identificar los factores clave que impulsan el churn</strong> y <strong>predecir qué clientes tienen mayor probabilidad de abandonar</strong>, para diseñar estrategias de retención efectivas.
+            </p>
+        </section>
+
+        <!-- ============================================================
+        SECCIÓN 2: PREGUNTAS CLAVE
+        ============================================================ -->
+        <section class="section" id="preguntas">
+            <div class="section-title"><span class="emoji">❓</span> Preguntas Clave de Negocio</div>
+            <ul class="insights">
+                <li><strong>1.</strong> ¿Por qué los clientes abandonan?</li>
+                <li><strong>2.</strong> ¿Qué clientes son más propensos a abandonar?</li>
+                <li><strong>3.</strong> ¿Qué canales de adquisición generan el mayor valor de vida (LTV)?</li>
+                <li><strong>4.</strong> ¿Cómo impacta la satisfacción del cliente en los ingresos?</li>
+                <li><strong>5.</strong> ¿Qué estrategias de marketing reducen el churn?</li>
+            </ul>
+        </section>
+
+        <!-- ============================================================
+        SECCIÓN 3: DATASET
+        ============================================================ -->
+        <section class="section" id="dataset">
+            <div class="section-title"><span class="emoji">📊</span> Dataset</div>
+            <ul class="insights">
+                <li><strong>Fuente:</strong> Kaggle — Sales and Marketing DataSet (Bhasker Paul)</li>
+                <li><strong>Filas:</strong> 15,000</li>
+                <li><strong>Columnas:</strong> 30</li>
+                <li><strong>Variable objetivo:</strong> <code>churn</code> (binaria, ~85% No churn, ~15% Churn)</li>
+                <li><strong>Problemas incluidos:</strong> valores faltantes, outliers, ruido, tipos mixtos, desbalance de clases</li>
+            </ul>
+        </section>
+
+        <!-- ============================================================
+        SECCIÓN 4: DATA UNDERSTANDING – HALLAZGOS CLAVE
+        ============================================================ -->
+        <section class="section" id="hallazgos">
+            <div class="section-title"><span class="emoji">🔍</span> Data Understanding – Hallazgos Clave</div>
+            <ul class="insights">
+                <li><strong>Umbral Crítico:</strong> Clientes con satisfacción ≤ 2 tienen un <strong>50% de probabilidad de abandonar</strong> (frente al 10% si es ≥ 3).</li>
+                <li><strong>Segmentación por Gasto:</strong> La satisfacción es mucho más relevante para clientes de <strong>alto gasto</strong> (correlación ≈ -0.38) que para los de bajo gasto (≈ -0.10).</li>
+                <li><strong>Efecto Directo:</strong> La satisfacción tiene un efecto directo sobre el churn (correlación parcial -0.297), independientemente del gasto.</li>
+                <li><strong>Sin Multicolinealidad:</strong> No hay redundancia entre predictores (>|0.7|).</li>
+            </ul>
+        </section>
+
+        <!-- ============================================================
+        SECCIÓN 5: INSIGHTS DE NEGOCIO
+        ============================================================ -->
+        <section class="section" id="insights">
+            <div class="section-title"><span class="emoji">📊</span> Insights de Negocio</div>
+            <ul class="insights">
+                <li><strong>Perfil del Churner:</strong> Baja satisfacción, bajo gasto, más tickets de soporte.</li>
+                <li><strong>Canales de Adquisición:</strong> Todos los canales tienen LTV similar; no hay diferencias significativas.</li>
+                <li><strong>Estrategia Premium:</strong> Los usuarios Premium y con suscripción anual tienen menor churn.</li>
+                <li><strong>Prioridad:</strong> Mejorar la satisfacción reduce el churn, especialmente en clientes de alto gasto.</li>
+            </ul>
+        </section>
+
+        <!-- ============================================================
+        SECCIÓN 6: VISUALIZACIONES CLAVE
+        ============================================================ -->
+        <section class="section" id="visualizaciones">
+            <div class="section-title"><span class="emoji">🖼️</span> Visualizaciones Clave</div>
+            <p class="text-block">
+                Las siguientes visualizaciones resumen los hallazgos más importantes del análisis exploratorio.
+                En el <strong>Notebook 01 — Data Understanding</strong> se realizó un análisis avanzado de correlaciones
+                que incluyó la detección de umbrales (efecto no lineal de la satisfacción), heterogeneidad por segmentos de gasto,
+                evaluación de multicolinealidad y correlación parcial para aislar el efecto directo de la satisfacción sobre el churn.
+                Estas gráficas son el reflejo de ese trabajo y cuentan la historia detrás de los números.
+            </p>
+            <div class="figure-grid">
+                <div class="figure-card">
+                    <img src="figures/fig1_correlation_heatmap.png" alt="Heatmap de Correlaciones" loading="lazy" />
+                    <div class="caption">
+                        <strong>Figura 1: Heatmap de Correlaciones</strong><br />
+                        <span style="font-size:0.8rem; color:var(--text-muted);">
+                            Muestra que la satisfacción y el gasto total son los factores con mayor asociación (negativa) con el churn.
+                            El análisis avanzado reveló que la relación no es lineal, sino que presenta un umbral crítico.
+                        </span>
+                    </div>
+                </div>
+                <div class="figure-card">
+                    <img src="figures/fig2_churner_profile.png" alt="Perfil del Cliente" loading="lazy" />
+                    <div class="caption">
+                        <strong>Figura 2: Perfil del Cliente (Churners vs No Churners)</strong><br />
+                        <span style="font-size:0.8rem; color:var(--text-muted);">
+                            Los clientes que abandonan tienen una satisfacción notablemente más baja, un gasto total inferior
+                            y un número ligeramente mayor de tickets de soporte. La edad y el tiempo de sesión no muestran diferencias significativas.
+                        </span>
+                    </div>
+                </div>
+                <div class="figure-card">
+                    <img src="figures/fig3_ltv_by_channel.png" alt="LTV por Canal" loading="lazy" />
+                    <div class="caption">
+                        <strong>Figura 3: LTV por Canal de Adquisición</strong><br />
+                        <span style="font-size:0.8rem; color:var(--text-muted);">
+                            No se observan diferencias relevantes en el valor de vida del cliente entre los distintos canales de adquisición,
+                            lo que sugiere que la estrategia de captación debe equilibrarse sin priorizar un canal específico.
+                        </span>
+                    </div>
+                </div>
+                <div class="figure-card">
+                    <img src="figures/fig4_satisfaction_vs_spend.png" alt="Satisfacción vs Gasto" loading="lazy" />
+                    <div class="caption">
+                        <strong>Figura 4: Satisfacción vs Gasto (color por churn)</strong><br />
+                        <span style="font-size:0.8rem; color:var(--text-muted);">
+                            Los clientes que se van (churners) se concentran en la zona de baja satisfacción (≤ 2) y bajo gasto,
+                            mientras que los activos se distribuyen en niveles más altos de ambas variables.
+                        </span>
+                    </div>
+                </div>
+                <div class="figure-card">
+                    <img src="figures/fig5_churn_rate_by_segment.png" alt="Churn por Segmento" loading="lazy" />
+                    <div class="caption">
+                        <strong>Figura 5: Tasa de Churn por Segmento</strong><br />
+                        <span style="font-size:0.8rem; color:var(--text-muted);">
+                            Los usuarios con suscripción anual y aquellos que son Premium tienen tasas de churn considerablemente
+                            menores que los usuarios mensuales o no premium, lo que indica que estas estrategias de fidelización funcionan.
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+        SECCIÓN 7: NOTEBOOKS INTERACTIVOS + COMPARATIVA ANTES / DESPUÉS
+        ============================================================ -->
+        <section class="section" id="notebooks">
+            <div class="section-title"><span class="emoji">📓</span> Notebooks Interactivos</div>
+            <p class="text-block">
+                Estos notebooks contienen el análisis exploratorio completo y la preparación de datos.
+                A continuación, se muestra una comparativa de los principales indicadores de calidad de datos
+                <strong>antes del EDA</strong> (lo que se encontró en el Notebook 01) y <strong>después de la preparación</strong> (Notebook 02).
+            </p>
+
+            <!-- Comparativa Antes / Después -->
+            <div class="compare-grid">
+                <!-- Columna ANTES -->
+                <div class="compare-col">
+                    <h4>🔴 Antes (Data Understanding)</h4>
+                    <ul>
+                        <li><span>Valores nulos en <code>coupon_code</code></span> <span class="badge-problem">40.9%</span></li>
+                        <li><span>Valores nulos en <code>age</code></span> <span class="badge-problem">8.0%</span></li>
+                        <li><span>Valores nulos en <code>total_spent</code></span> <span class="badge-problem">7.0%</span></li>
+                        <li><span>Edad negativa (outlier)</span> <span class="badge-problem">Sí (−4 años)</span></li>
+                        <li><span>Gasto extremo (outlier)</span> <span class="badge-problem">15,910 USD</span></li>
+                        <li><span>Columnas totales</span> <span class="badge-problem">30</span></li>
+                        <li><span>Tipos de datos inconsistentes</span> <span class="badge-problem">Sí (monedas, fechas)</span></li>
+                        <li><span>Desbalance de clases (churn)</span> <span class="badge-problem">15.3%</span></li>
+                    </ul>
+                </div>
+                <!-- Columna DESPUÉS -->
+                <div class="compare-col">
+                    <h4>✅ Después (Data Preparation)</h4>
+                    <ul>
+                        <li><span>Nulos en <code>coupon_code</code></span> <span class="badge-solved">0% (categoría "Sin cupón")</span></li>
+                        <li><span>Nulos en <code>age</code></span> <span class="badge-solved">0% (imputados)</span></li>
+                        <li><span>Nulos en <code>total_spent</code></span> <span class="badge-solved">0% (imputados)</span></li>
+                        <li><span>Edad negativa</span> <span class="badge-solved">Corregida (NaN → imputada)</span></li>
+                        <li><span>Gasto extremo</span> <span class="badge-solved">Winsorizado al P99 (1205 USD)</span></li>
+                        <li><span>Columnas totales</span> <span class="badge-solved">52 (tras one‑hot encoding)</span></li>
+                        <li><span>Tipos de datos estandarizados</span> <span class="badge-solved">Sí (limpieza de monedas, fechas)</span></li>
+                        <li><span>Desbalance manejado</span> <span class="badge-solved">SMOTE / class_weight (previsto)</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <p class="text-block" style="margin-top: 1.5rem;">
+                Haz clic en cada tarjeta para explorar el notebook correspondiente y ver el proceso detallado.
+            </p>
+
+            <div class="card-grid">
+                <!-- Tarjeta 1: Data Understanding -->
+                <a href="01_CRISP_Data_Understanding.html" class="card premium-card" target="_blank" rel="noopener">
+                    <div class="icon">📊</div>
+                    <h3>01 — Data Understanding</h3>
+                    <p>
+                        Análisis exploratorio exhaustivo: perfil de clientes, distribuciones, boxplots por nivel de churn,
+                        matrices de correlación, detección de outliers, análisis de umbrales (satisfacción ≤ 2),
+                        segmentación por gasto, correlación parcial y reducción de dimensionalidad con PCA.
+                    </p>
+                    <div style="margin-top: 0.8rem; display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                        <span class="tag">✅ Completo</span>
+                        <span class="tag">📊 15+ gráficos</span>
+                        <span class="tag">🔍 Correlaciones avanzadas</span>
+                        <span class="tag">🧩 Umbrales y segmentos</span>
+                    </div>
+                </a>
+
+                <!-- Tarjeta 2: Data Preparation -->
+                <a href="02_CRISP_Data_Preparation.html" class="card premium-card" target="_blank" rel="noopener">
+                    <div class="icon">⚙️</div>
+                    <h3>02 — Data Preparation</h3>
+                    <p>
+                        Limpieza y transformación de datos: imputación de valores nulos (mediana por grupo de churn),
+                        corrección de outliers (edad negativa, winsorización de gasto), ingeniería de características
+                        (variables de riesgo, interacciones, temporales), codificación one‑hot y escalado con RobustScaler.
+                    </p>
+                    <div style="margin-top: 0.8rem; display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                        <span class="tag">✅ Listo</span>
+                        <span class="tag">🧹 0 nulos</span>
+                        <span class="tag">📈 52 columnas</span>
+                        <span class="tag">⚡ Feature engineering</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Bonus: Notebook 03 (Modelado) como "próximamente" -->
+            <div style="margin-top: 0.5rem; opacity: 0.7; padding: 0.5rem 1rem; border: 1px dashed var(--border-color); border-radius: 12px; background: var(--bg-code);">
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin: 0;">
+                    📌 <strong>03 — Modeling</strong> <span style="font-size:0.8rem;">(Próximamente)</span>
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================================
+        SECCIÓN 8: REPORTES DE CALIDAD DE DATOS (ydata-profiling)
+        ============================================================ -->
+        <section class="section" id="reportes">
+            <div class="section-title"><span class="emoji">📄</span> Reportes de Calidad de Datos</div>
+            <p class="text-block">
+                Estos reportes han sido generados automáticamente con <strong>ydata‑profiling</strong> y ofrecen una visión integral de la calidad de los datos
+                <strong>antes</strong> y <strong>después</strong> de la preparación. Son el complemento perfecto al análisis exploratorio y a la preparación de datos.
+            </p>
+
+            <div class="card-grid">
+                <!-- Reporte Raw -->
+                <a href="report_raw.html" class="card premium-card" target="_blank" rel="noopener">
+                    <div class="icon">📋</div>
+                    <h3>Reporte de Datos Crudos</h3>
+                    <p>
+                        Auditoría completa de los datos originales: estadísticas descriptivas, matrices de correlación,
+                        valores atípicos, distribuciones, y alertas de calidad (nulos, cardinalidad, etc.).
+                        <strong>Muestra el estado inicial del dataset.</strong>
+                    </p>
+                    <div style="margin-top: 0.8rem; display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                        <span class="tag">🔴 40% nulos en coupon_code</span>
+                        <span class="tag">📊 30 columnas</span>
+                    </div>
+                </a>
+
+                <!-- Reporte Processed -->
+                <a href="report_processed.html" class="card premium-card" target="_blank" rel="noopener">
+                    <div class="icon">✅</div>
+                    <h3>Reporte de Datos Procesados</h3>
+                    <p>
+                        Auditoría de los datos después de la limpieza y transformación: 0 nulos, 52 columnas,
+                        variables creadas, escalado aplicado y splits de entrenamiento/test.
+                        <strong>Muestra la calidad final del dataset.</strong>
+                    </p>
+                    <div style="margin-top: 0.8rem; display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                        <span class="tag">🟢 0 nulos</span>
+                        <span class="tag">📈 52 columnas</span>
+                        <span class="tag">⚙️ Preparado para ML</span>
+                    </div>
+                </a>
+            </div>
+
+            <p class="text-block" style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">
+                💡 <em>Estos reportes se regeneran automáticamente al ejecutar <code>src/generate_reports.py</code>.</em>
+            </p>
+        </section>
+
+        <!-- ============================================================
+        SECCIÓN 9: PREPARACIÓN DE DATOS
+        ============================================================ -->
+        <section class="section" id="preparacion">
+            <div class="section-title"><span class="emoji">⚙️</span> Preparación de Datos</div>
+            <ul class="insights">
+                <li><strong>Imputación:</strong> age, total_spent, satisfaction_score (mediana por churn), gender (moda), coupon_code ('Sin cupón').</li>
+                <li><strong>Corrección de outliers:</strong> Edad negativa → NaN e imputada; total_spent winsorizado al P99.</li>
+                <li><strong>Feature Engineering:</strong> Creación de <code>satisfaction_risk</code>, <code>is_high_spender</code>, <code>sat_high_spender</code>, variables temporales y <code>revenue_per_visit</code>.</li>
+                <li><strong>Codificación y Escalado:</strong> One‑Hot Encoding de 7 variables → 52 columnas. RobustScaler sobre 16 variables numéricas.</li>
+                <li><strong>Dataset Final:</strong> 15,000 filas, 52 columnas, 0 nulos. División Train/Test estratificada (80/20).</li>
+            </ul>
+        </section>
+
+        <!-- ============================================================
+        SECCIÓN 10: ESTADO ACTUAL DEL PROYECTO
+        ============================================================ -->
+        <section class="section" id="estado">
+            <div class="section-title"><span class="emoji">🚀</span> Estado Actual del Proyecto</div>
+            <p class="text-block">
+                ✅ <strong>Fase de Data Preparation completada.</strong><br />
+                El dataset ha sido completamente transformado y está listo para modelado.
+            </p>
+        </section>
+
+        <!-- ============================================================
+        SECCIÓN 11: PRÓXIMOS PASOS – MODELADO
+        ============================================================ -->
+        <section class="section" id="proximos">
+            <div class="section-title"><span class="emoji">🔮</span> Próximos Pasos – Modelado</div>
+            <ul class="insights">
+                <li><strong>Entrenamiento de modelos base:</strong> Regresión Logística, Random Forest.</li>
+                <li><strong>Modelos avanzados:</strong> XGBoost con optimización de hiperparámetros.</li>
+                <li><strong>Manejo del desbalance:</strong> SMOTE o class_weight='balanced'.</li>
+                <li><strong>Evaluación:</strong> Accuracy, F1‑Score, AUC‑ROC, Matriz de Confusión.</li>
+                <li><strong>Interpretación:</strong> SHAP/LIME para explicar predicciones.</li>
+            </ul>
+        </section>
+
+        <!-- ============================================================
+        FOOTER
+        ============================================================ -->
+        <footer class="footer">
+            <span>© 2026 · Proyecto de Portfolio · Raúl Jaimes</span>
+            <span>
+                <a href="https://github.com/INGRAULJAIMES/sales-marketing-churn-analysis" target="_blank" rel="noopener">GitHub</a> ·
+                <a href="https://www.linkedin.com/in/rauljaimes/" target="_blank" rel="noopener">LinkedIn</a>
+            </span>
+        </footer>
+
+    </main>
+
+    <!-- ============================================================
+    BOTÓN DE VOLVER ARRIBA
+    ============================================================ -->
+    <button class="back-to-top" id="backToTop" aria-label="Volver arriba">↑</button>
+
+    <!-- ============================================================
+    JAVASCRIPT: TEMA OSCURO + INTERSECTION OBSERVER + BACK TO TOP
+    ============================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ----- 1. TOGGLE DE TEMA (con persistencia) -----
+            const toggleBtn = document.getElementById('themeToggleNav');
+            const themeIcon = document.getElementById('themeIconNav');
+            const themeLabel = document.getElementById('themeLabelNav');
+            const root = document.documentElement;
+
+            const storedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            let currentTheme = storedTheme || (prefersDark ? 'dark' : 'light');
+
+            function setTheme(theme) {
+                if (theme === 'dark') {
+                    root.setAttribute('data-theme', 'dark');
+                    themeIcon.textContent = '☀️';
+                    themeLabel.textContent = 'Claro';
+                } else {
+                    root.removeAttribute('data-theme');
+                    themeIcon.textContent = '🌙';
+                    themeLabel.textContent = 'Oscuro';
+                }
+                localStorage.setItem('theme', theme);
+                currentTheme = theme;
+            }
+
+            setTheme(currentTheme);
+
+            toggleBtn.addEventListener('click', function() {
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                setTheme(newTheme);
+            });
+
+            // Escuchar cambios en la preferencia del sistema (solo si no hay manual)
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+                if (!localStorage.getItem('theme')) {
+                    setTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+
+            // ----- 2. INTERSECTION OBSERVER (animación de secciones) -----
+            const sections = document.querySelectorAll('.section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.12,
+                rootMargin: '0px 0px -40px 0px'
+            });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            // Forzar visibilidad en caso de que algunas ya estén visibles al cargar
+            setTimeout(() => {
+                sections.forEach(section => {
+                    const rect = section.getBoundingClientRect();
+                    const winHeight = window.innerHeight;
+                    if (rect.top < winHeight - 80) {
+                        section.classList.add('visible');
+                    }
+                });
+            }, 100);
+
+            // ----- 3. BOTÓN DE VOLVER ARRIBA -----
+            const backBtn = document.getElementById('backToTop');
+
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 400) {
+                    backBtn.classList.add('visible');
+                } else {
+                    backBtn.classList.remove('visible');
+                }
+            });
+
+            backBtn.addEventListener('click', function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+        })();
+    </script>
+
+</body>
+</html>

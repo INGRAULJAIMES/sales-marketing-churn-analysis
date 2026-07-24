@@ -22,6 +22,7 @@ Este repositorio forma parte de mi portafolio para la **Maestría en Estadístic
 - [🎯 Problema de Negocio](#-problema-de-negocio)
 - [❓ Preguntas Clave de Negocio](#-preguntas-clave-de-negocio)
 - [📊 Dataset](#-dataset)
+- [📋 Metodología](#-metodología)
 - [📈 Antes vs. Después (Calidad de Datos)](#-antes-vs-después-calidad-de-datos)
 - [🔍 Data Understanding – Hallazgos Clave](#-data-understanding--hallazgos-clave)
 - [📊 Insights de Negocio](#-insights-de-negocio)
@@ -66,6 +67,106 @@ La empresa enfrenta una tasa de **churn (abandono de clientes) del 15%**, lo que
 
 ---
 
+## 📋 Metodología
+
+Este proyecto se fundamenta en dos marcos de trabajo complementarios que garantizan un flujo de trabajo robusto, trazable y alineado con los estándares de la industria:
+
+- **CRISP-DM** (Cross-Industry Standard Process for Data Mining): una metodología cíclica y estructurada que guía todo el ciclo de vida del proyecto, desde la comprensión del negocio hasta el despliegue.
+- **Ciclo de EDA iterativo**: un proceso de análisis exploratorio que se retroalimenta continuamente, permitiendo profundizar en los datos y refinar las hipótesis a medida que se descubren nuevos patrones.
+
+---
+
+### Ciclo CRISP-DM
+
+El proyecto sigue las fases del estándar CRISP-DM, permitiendo una gestión estructurada y la retroalimentación continua entre etapas. Este enfoque asegura que cada fase esté alineada con los objetivos de negocio y que los hallazgos del análisis se traduzcan en acciones concretas.
+
+```mermaid
+graph TD
+    A[Business Understanding] --> B[Data Understanding]
+    B --> C[Data Preparation]
+    C --> D[Modeling]
+    D --> E[Evaluation]
+    E --> F[Deployment]
+    
+    B -->|Retroalimentación| A
+    C -->|Retroalimentación| B
+    D -->|Retroalimentación| C
+    E -->|Retroalimentación| D
+    F -->|Retroalimentación| E
+```
+
+### 📋 Estado de Ejecución por Fase
+
+| # | Fase CRISP-DM | Actividades Realizadas | Entregables / Evidencia en el Proyecto |
+| :---: | :--- | :--- | :--- |
+| **1** | 🎯 **Business Understanding** | Definición del problema de negocio: tasa de churn del 15%, identificación de factores clave y necesidad de predecir abandono. | Sección *"Problema de Negocio"* y *"Preguntas Clave de Negocio"* en el `README.md`. |
+| **2** | 🔍 **Data Understanding** | Descarga de datos, exploración estructural, auditoría de calidad (nulos, duplicados, tipos), análisis de distribuciones, correlaciones, detección de outliers y umbrales críticos. | Notebook `01_CRISP_Data_Understanding.ipynb` (EDA completo), informe `data_understanding_report.md` y visualizaciones en `reports/figures/`. |
+| **3** | 🧹 **Data Preparation** | Limpieza (imputación de nulos, corrección de outliers), *feature engineering*, codificación de variables categóricas, escalado de numéricas y división en conjuntos train/test. | Notebook `02_CRISP_Data_Preparation.ipynb`, dataset procesado en `data/processed/` y splits persistidos como `.pkl` (`X_train.pkl`, `X_test.pkl`, `y_train.pkl`, `y_test.pkl`). |
+| **4** | 🤖 **Modeling** | *(Próximamente)* Entrenamiento de modelos base (Regresión Logística, Random Forest) y avanzados (XGBoost), ajuste de hiperparámetros y manejo del desbalance de clases. | Notebook `03_CRISP_Modeling.ipynb` (pendiente) y modelos serializados en la carpeta `models/`. |
+| **5** | 📊 **Evaluation** | *(Próximamente)* Evaluación del rendimiento mediante métricas robustas (F1‑Score, AUC‑ROC, Matriz de Confusión), comparación y selección del modelo óptimo. | Informe de evaluación, curvas ROC y análisis de importancia de características (SHAP). |
+| **6** | 🚀 **Deployment** | *(Próximamente)* Traducción de hallazgos en recomendaciones de negocio accionables y despliegue opcional de dashboard o API para monitoreo continuo. | Recomendaciones finales en `README.md` y documentación técnica del modelo para su implementación en producción. |
+
+> 💡 **Nota sobre Iteratividad:**  
+> CRISP-DM es un proceso **cíclico e iterativo**. Si durante la fase de modelado se detectan problemas de rendimiento o sesgos, se regresa a fases anteriores para refinar las variables, mejorar el *feature engineering* o redefinir los objetivos. Este enfoque garantiza que el modelo final sea estadísticamente robusto y esté completamente alineado con los objetivos estratégicos del negocio.
+
+---
+
+## 🔬 5. Ciclo de EDA Aplicado
+
+El Análisis Exploratorio de Datos (EDA) no fue un paso único, sino un **proceso iterativo de 11 etapas** que permitió profundizar gradualmente en los datos y refinar las hipótesis a medida que se descubrían nuevos patrones estadísticos.
+
+```mermaid
+graph TD
+    A[Definir Objetivo del Análisis] --> B[Obtener y Cargar Datos]
+    B --> C[Auditoría Inicial de Calidad]
+    C --> D[Limpieza y Preparación Básica]
+    D --> E[Análisis Univariante]
+    E --> F[Análisis Bivariante y Multivariante]
+    F --> G[Detección de Patrones y Outliers]
+    G --> H[Generación de Hipótesis]
+    H --> I{¿Se necesita más profundidad?}
+    I -->|Sí| J[Análisis Avanzado: Umbrales, Segmentación, PCA]
+    J --> F
+    I -->|No| K[Conclusiones y Documentación]
+    K --> L[Preparación de Datos para Modelado]
+```
+
+### 🧩 Beneficios de este Enfoque Sistemático:
+
+- ✅ **Evidencia sólida:** Cada hallazgo está respaldado por análisis estadístico y visualizaciones.
+- ✅ **Decisiones justificadas:** Las transformaciones aplicadas en la fase de *Data Preparation* responden directamente a problemas detectados en el EDA.
+- ✅ **Hipótesis refinadas:** Los patrones emergentes en etapas tempranas guiaron el análisis de etapas posteriores.
+- ✅ **Reproducibilidad total:** Todo el proceso está documentado en notebooks versionados con narrativa de negocio.
+
+### 📋 Desglose Detallado de las 11 Etapas
+
+| # | Etapa | Descripción Metodológica | Evidencia en el Proyecto |
+| :---: | :--- | :--- | :--- |
+| **1** | 🎯 **Definir Objetivo del Análisis** | Establecer preguntas de negocio y métricas de éxito que guiarán todo el proceso analítico. | 5 preguntas clave en la sección *"Problema de Negocio"* del `README.md`. |
+| **2** | 📥 **Obtención y Carga de Datos** | Descarga del dataset desde Kaggle con carga universal (soporte multi-formato y multi-encoding). | Script `src/download_dataset.py` y Pasos 1-4 del Notebook `01_CRISP_Data_Understanding.ipynb`. |
+| **3** | 🔍 **Auditoría Inicial de Calidad** | Revisión de nulos, duplicados, tipos de datos, rangos y detección de *outliers* mediante **método IQR**. | Paso 4 del EDA: reporte de calidad (`quality`), visualización de faltantes y detección IQR. |
+| **4** | 🧹 **Limpieza y Preparación Básica** | Eliminación de duplicados exactos, estandarización de nombres de columnas y saneamiento de texto. | Paso 3 del EDA: copia de trabajo (`eda`), `drop_duplicates()` y normalización de columnas. |
+| **5** | 📊 **Análisis Univariante** | Descripción individual de variables: distribuciones, estadísticos descriptivos, histogramas y gráficos de barras. | Pasos 5, 6 y 7 del EDA: variable objetivo (*churn*), perfil demográfico y uso de redes sociales. |
+| **6** | 🔗 **Análisis Bivariante y Multivariante** | Relación entre variables y con el *target* mediante *boxplots*, **matrices de correlación de Spearman** y *ranking* de asociaciones. | Pasos 8, 9 y 10 del EDA: *boxplots* por categoría de *churn*, matriz de correlación y *ranking*. |
+| **7** | ⚠️ **Detección de Patrones y Outliers** | Identificación de valores atípicos y comportamientos anómalos que podrían sesgar el modelo. | Paso 11 del EDA: detección IQR y visualización del porcentaje de *outliers* por variable. |
+| **8** | 💡 **Generación de Hipótesis** | Formulación de explicaciones sobre los patrones observados para guiar el análisis avanzado. | Hipótesis documentada: *"La satisfacción baja (≤ 2) dispara el churn"* (validada en umbrales). |
+| **9** | 🧠 **Análisis Avanzado** | Profundización en relaciones no lineales, segmentación por grupos, evaluación de multicolinealidad y **PCA**. | Sección 6.5 del Notebook 01: umbrales de satisfacción, segmentación por gasto, correlación parcial y PCA. |
+| **10** | 📝 **Conclusiones y Documentación** | Síntesis de hallazgos relevantes en informes ejecutivos y visualizaciones clave para *stakeholders*. | `data_understanding_report.md`, 5 visualizaciones en `reports/figures/` e *"Insights de Negocio"* en el README. |
+| **11** | ⚙️ **Preparación para Modelado** | Transformación final para ML: imputación, **winsorización**, *feature engineering*, codificación y escalado. | Notebook `02_CRISP_Data_Preparation.ipynb` completo y artefactos en `data/processed/`. |
+
+### 🔄 Carácter Iterativo del Proceso
+
+> 💡 **Ciclo de Retroalimentación Continua:**  
+> Si durante la fase de modelado se detectan problemas de rendimiento (ej. bajo *Recall*, *overfitting*, sesgo en predicciones), el equipo **regresa a las etapas de EDA** para:
+> 
+> - Revisar la distribución de variables mal representadas.
+> - Crear nuevas características (*feature engineering*) basadas en hallazgos previos.
+> - Re-evaluar la calidad de los datos y la presencia de *outliers* no detectados.
+> 
+> Este ciclo iterativo garantiza que el modelo final esté **estadísticamente optimizado** y **estratégicamente alineado** con los objetivos de negocio.
+
+---
+
 ## 📈 Antes vs. Después (Calidad de Datos)
 
 | Métrica | **Antes (Raw)** | **Después (Processed)** | Mejora |
@@ -95,7 +196,7 @@ La empresa enfrenta una tasa de **churn (abandono de clientes) del 15%**, lo que
 | **Umbral Crítico** | Clientes con satisfacción ≤ 2 tienen **50% de probabilidad de abandonar** (vs. 10% si ≥ 3). |
 | **Segmentación por Gasto** | La satisfacción es más relevante en clientes de **alto gasto** (ρ ≈ -0.38) que en bajo gasto (ρ ≈ -0.10). |
 | **Efecto Directo** | La satisfacción tiene un efecto directo sobre el churn (correlación parcial -0.297). |
-| **Sin Multicolinealidad** | Ningún par de predictores supera |0.7|. |
+| **Sin Multicolinealidad** | Ningún par de predictores supera \|0.7\|. |
 | **Desbalance** | 15.3% churn, lo que requiere técnicas de balanceo. |
 
 ---
@@ -174,13 +275,15 @@ A continuación, se resumen los **hallazgos más relevantes** extraídos del an�
 
 ## 📊 Visualizaciones Clave
 
-| Figura | Descripción | Enlace |
-| :--- | :--- | :--- |
-| **1. Heatmap de Correlaciones** | Satisfacción y gasto son los factores más relevantes. | [Ver imagen](reports/figures/fig1_correlation_heatmap.png) |
-| **2. Perfil del Cliente (Boxplots)** | Churners tienen menor satisfacción y gasto, más tickets de soporte. | [Ver imagen](reports/figures/fig2_churner_profile.png) |
-| **3. LTV por Canal** | No hay diferencias significativas entre canales. | [Ver imagen](reports/figures/fig3_ltv_by_channel.png) |
-| **4. Satisfacción vs Gasto** | Churners se concentran en baja satisfacción y bajo gasto. | [Ver imagen](reports/figures/fig4_satisfaction_vs_spend.png) |
-| **5. Churn por Suscripción y Premium** | Premium y suscripción anual tienen menor churn. | [Ver imagen](reports/figures/fig5_churn_rate_by_segment.png) |
+A continuación, se presentan las visualizaciones más relevantes que resumen los hallazgos del análisis exploratorio. Cada gráfica está acompañada de su interpretación y su relación con las preguntas de negocio.
+
+| Visualización | Descripción e Insight |
+| :---: | :--- |
+| <img src="reports/figures/fig1_correlation_heatmap.png" width="400"> | **Figura 1: Heatmap de Correlaciones** <br> Confirma que la **satisfacción** y el **gasto total** son los factores con mayor asociación negativa con el churn. El análisis avanzado reveló que esta relación no es lineal, sino que presenta un umbral crítico (satisfacción ≤ 2). |
+| <img src="reports/figures/fig2_churner_profile.png" width="400"> | **Figura 2: Perfil del Cliente (Churners vs No Churners)** <br> Los clientes que abandonan tienen una satisfacción notablemente más baja, un gasto total inferior y un número ligeramente mayor de tickets de soporte. La edad y el tiempo de sesión no muestran diferencias significativas. |
+| <img src="reports/figures/fig3_ltv_by_channel.png" width="400"> | **Figura 3: LTV por Canal de Adquisición** <br> No se observan diferencias significativas en el valor de vida del cliente entre los distintos canales, lo que sugiere que la estrategia de captación debe equilibrarse sin priorizar un canal específico. |
+| <img src="reports/figures/fig4_satisfaction_vs_spend.png" width="400"> | **Figura 4: Satisfacción vs Gasto (color por churn)** <br> Los churners se concentran en la zona de baja satisfacción (≤ 2) y bajo gasto, mientras que los clientes activos se distribuyen en niveles más altos de ambas variables. |
+| <img src="reports/figures/fig5_churn_rate_by_segment.png" width="400"> | **Figura 5: Tasa de Churn por Segmento** <br> Los usuarios con suscripción anual y aquellos que son Premium tienen tasas de churn considerablemente menores, lo que indica que estas estrategias de fidelización funcionan eficazmente. |
 
 ---
 
@@ -251,7 +354,9 @@ A continuación, se resumen los **hallazgos más relevantes** extraídos del an�
 ```bash
 git clone https://github.com/tu-usuario/sales-marketing-churn-analysis.git
 cd sales-marketing-churn-analysis
-```
+
+---
+
 
 ## Crear y activar entorno virtual
 
@@ -364,4 +469,4 @@ Si este proyecto te ha resultado útil, tienes sugerencias o quieres colaborar e
 
 ---
 
-*Última actualización: 23 de julio de 2026*
+*Última actualización: 24 de julio de 2026*
