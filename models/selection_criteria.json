@@ -1,0 +1,9 @@
+{
+    "primary": "Balanced Accuracy",
+    "tie_breakers": "F1 -> ROC-AUC (threshold 0.005) -> Time",
+    "selected_model": "XGBoost",
+    "balanced_accuracy": 0.9118966107497433,
+    "f1_churn": 0.6780415430267063,
+    "roc_auc": 0.9129399178363574,
+    "time_seconds": 48.13731098175049
+}
